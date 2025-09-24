@@ -1,32 +1,25 @@
-;; ~/.config/joyemacs/init.el — you own this file (no Nix options required)
+;;; init.el --- JoyEmacs entrypoint -*- lexical-binding: t; -*-
+
+;; Basic hygiene
 (setq inhibit-startup-message t
       use-package-always-ensure nil) ;; Nix provides packages
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
 
 (eval-when-compile (require 'use-package))
 
-;; Theme (doom-themes included by Nix)
-(use-package doom-themes
-  :config (load-theme 'doom-nord t))
+;; Add lisp/ to load-path
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;; Completion stack
-(use-package vertico :init (vertico-mode 1))
-(use-package orderless :init (setq completion-styles '(orderless basic)))
-(use-package marginalia :init (marginalia-mode 1))
-(use-package consult)
-(use-package embark)
-(use-package which-key :init (which-key-mode 1))
+;; Load modules
+(require 'core-ui)
+(require 'core-evil)
+(require 'core-completion)
+(require 'core-git)
+(require 'core-project)
+(require 'core-leader)
 
-;; Evil (Vim keys)
-(use-package evil
-  :init (setq evil-want-keybinding nil
-              evil-undo-system 'undo-redo)
-  :config (evil-mode 1))
-(use-package evil-collection :after evil :config (evil-collection-init))
-
-;; Git
-(use-package magit)
-
-;; Your extras
-(add-to-list 'load-path (expand-file-name "lisp" (file-name-directory load-file-name)))
-;; (require 'my-bindings) ; put lisp/my-bindings.el and uncomment
+(provide 'init)
+;;; init.el ends here
 
