@@ -18,6 +18,14 @@
         evil evil-collection
         doom-themes
         magit
+        doom-modeline
+        all-the-icons            # icons in modeline/treemacs/dashboard
+        dashboard                # start screen (Doom-like)
+        treemacs treemacs-evil   # project/file tree
+        centaur-tabs             # (optional) tabs like Doom
+        rainbow-delimiters       # rainbow parens
+        hl-todo                  # TODO/FIXME highlights
+        general                  # leader keys (Doom-style)
       ]);
 
       defaultCfgDir = "$HOME/.config/joyemacs";
