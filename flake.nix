@@ -24,6 +24,11 @@
         eglot
         treesit-auto
         modus-themes
+        evil
+        evil-collection
+        evil-surround
+        evil-commentary
+        doom-themes
       ]);
     in
     {
