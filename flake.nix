@@ -5,11 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
-outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs = { self, nixpkgs, flake-utils, ... }:
   flake-utils.lib.eachDefaultSystem (system:
     let
-      pkgs   = import nixpkgs { inherit system; };
-      epkgs  = pkgs.emacsPackagesFor pkgs.emacs;  # or pkgs.emacs29-pgtk
+      pkgs  = import nixpkgs { inherit system; };
+      epkgs = pkgs.emacsPackagesFor pkgs.emacs;
 
       joyEmacs = epkgs.emacsWithPackages (_: with epkgs; [
         use-package
@@ -22,7 +22,8 @@ outputs = { self, nixpkgs, flake-utils, ... }:
 
       defaultCfgDir = "$HOME/.config/joyemacs";
 
-      launcher = pkgs.writeShellScript "joyemacs" ''
+      # ⬇️ creates a package with bin/joyemacs
+      launcher  = pkgs.writeShellScriptBin "joyemacs" ''
         set -euo pipefail
         CFG_DIR="''${JOYEMACS_HOME:-${defaultCfgDir}}"
         mkdir -p "$CFG_DIR"
@@ -33,7 +34,7 @@ outputs = { self, nixpkgs, flake-utils, ... }:
         exec ${joyEmacs}/bin/emacs -Q --load "$CFG_DIR/init.el" "$@"
       '';
 
-      installer = pkgs.writeShellScript "joyemacs-install" ''
+      installer = pkgs.writeShellScriptBin "joyemacs-install" ''
         set -euo pipefail
         CFG_DIR="''${JOYEMACS_HOME:-${defaultCfgDir}}"
         if [ -e "$CFG_DIR" ] && [ "$(ls -A "$CFG_DIR" 2>/dev/null | wc -l)" -gt 0 ]; then
@@ -50,12 +51,11 @@ outputs = { self, nixpkgs, flake-utils, ... }:
     {
       packages.default = joyEmacs;
 
-      apps.joyemacs = { type = "app"; program = launcher; };
-      apps.install  = { type = "app"; program = installer; };
-      apps.default  = { type = "app"; program = launcher; };
+      # 👇 program must be a STRING path
+      apps.joyemacs = { type = "app"; program = "${launcher}/bin/joyemacs"; };
+      apps.install  = { type = "app"; program = "${installer}/bin/joyemacs-install"; };
+      apps.default  = { type = "app"; program = "${launcher}/bin/joyemacs"; };
 
-      devShells.default = pkgs.mkShell {
-        packages = with pkgs; [ joyEmacs ripgrep fd git ];
-      };
+      devShells.default = pkgs.mkShell { packages = with pkgs; [ joyEmacs ripgrep fd git ]; };
     });
 }
