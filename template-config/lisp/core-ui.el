@@ -1,10 +1,20 @@
 ;;; core-ui.el --- UI/UX for JoyEmacs -*- lexical-binding: t; -*-
 
 (use-package doom-themes
+  :demand t
   :config
   (load-theme 'doom-nord t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
+
+  ;; Explicitly load extensions when autoloads aren’t available
+  (ignore-errors (require 'doom-themes-ext-visual-bell))
+  (when (fboundp 'doom-themes-visual-bell-config)
+    (doom-themes-visual-bell-config))
+
+  ;; (Optional) other extensions if you use them:
+  ;; (ignore-errors (require 'doom-themes-ext-org))
+  ;; (when (fboundp 'doom-themes-org-config)
+  ;;   (doom-themes-org-config))
+  )
 
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
