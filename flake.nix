@@ -13,7 +13,7 @@
 
       joyEmacs = epkgs.emacsWithPackages (_: with epkgs; [
         use-package
-        vertico orderless marginalia consult embark
+        vertico orderless marginalia consult embark embark-consult
         which-key
         evil evil-collection
         doom-themes

@@ -10,6 +10,9 @@
 (eval-when-compile (require 'use-package))
 
 ;; Add lisp/ to load-path
+(setq user-emacs-directory
+      (expand-file-name (or (getenv "JOYEMACS_HOME") "~/.config/joyemacs/")))
+
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 ;; Load modules
