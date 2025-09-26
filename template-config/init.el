@@ -23,7 +23,10 @@
 (require 'core-project)
 (require 'core-leader)
 (require 'core-treesitter)
+
+(require 'eglot)        ;; <-- add this line
 (require 'core-nix)
+(require 'core-python)
 
 (provide 'init)
 ;;; init.el ends here

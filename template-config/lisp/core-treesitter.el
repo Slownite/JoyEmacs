@@ -11,6 +11,12 @@
 
 ;; If your grammars come from your OS/Nix, point Emacs to them:
 ;; Example Nix paths (uncomment the one that matches your system):
+(let ((dirs (getenv "JOYEMACS_TS_DIRS")))
+  (when dirs
+    (dolist (d (split-string dirs ":" t))
+      (when (file-directory-p d)
+        (add-to-list 'treesit-extra-load-path d)))))
+
 (add-to-list 'treesit-extra-load-path "/run/current-system/sw/lib/tree-sitter") ; NixOS system profile
 (add-to-list 'treesit-extra-load-path (expand-file-name "~/.nix-profile/lib/tree-sitter")) ; user profile
 (dolist (dir '("~/.nix-profile/lib/tree-sitter"
