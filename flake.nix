@@ -40,6 +40,7 @@
             nix-ts-mode
             eglot
             corfu
+            vue-mode
           ]);
 
         # ---- LSP servers + formatters ----
