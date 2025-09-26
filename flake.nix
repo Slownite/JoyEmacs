@@ -27,6 +27,7 @@
         hl-todo                  # TODO/FIXME highlights
         general                  # leader keys (Doom-style)
 	nix-ts-mode
+	nix-mode
 	eglot
       ]);
 

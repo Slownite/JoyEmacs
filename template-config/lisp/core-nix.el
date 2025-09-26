@@ -1,17 +1,26 @@
 ;;; core-nix.el --- Nix language plumbing (TS, LSP, format) -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; - Prefers Tree-sitter (nix-ts-mode) if available
-;; - LSP via Eglot with the 'nil' server
-;; - Format on save: eglot-format-buffer -> alejandra -> nixfmt -> nixpkgs-fmt
-;; - Eldoc and Flymake integration
+;; - Prefer Tree-sitter major mode (nix-ts-mode) when available
+;; - LSP via Eglot using the 'nil' language server
+;; - Format-on-save: eglot-format-buffer -> alejandra -> nixfmt -> nixpkgs-fmt
 
 ;;; Code:
 
-;; Associate .nix files and prefer TS major mode if installed
-(add-to-list 'auto-mode-alist
-             (cons "\\.nix\\'" (if (fboundp 'nix-ts-mode) 'nix-ts-mode 'nix-mode)))
+(require 'seq) ;; for seq-find
 
-(when (boundp 'major-mode-remap-alist)
+;; ---------- Modes & file associations ----------
+;; Prefer nix-ts-mode; fall back to nix-mode; else fundamental-mode (so it never errors).
+(add-to-list 'auto-mode-alist
+             (cons "\\.nix\\'"
+                   (cond
+                    ((fboundp 'nix-ts-mode) 'nix-ts-mode)
+                    ((fboundp 'nix-mode)    'nix-mode)
+                    (t                      'fundamental-mode))))
+
+;; Only add the remap if both modes exist (avoids “unknown mode 'nix-mode'” warning).
+(when (and (boundp 'major-mode-remap-alist)
+           (fboundp 'nix-mode)
+           (fboundp 'nix-ts-mode))
   (add-to-list 'major-mode-remap-alist '(nix-mode . nix-ts-mode)))
 
 ;; ---------- Formatting ----------
@@ -25,12 +34,11 @@
   :group 'core-nix)
 
 (defun core/nix--external-formatter ()
-  "Return the first available external formatter executable for Nix, or nil."
+  "Return the first available external Nix formatter executable, or nil."
   (seq-find #'executable-find core/nix-formatters))
 
 (defun core/nix-format-buffer ()
-  "Format current buffer.
-Prefer Eglot's server formatting; otherwise use an external formatter if found."
+  "Format current buffer. Prefer Eglot; otherwise use an external formatter if available."
   (interactive)
   (cond
    ;; Eglot formatting (if attached and server supports it)
@@ -63,39 +71,37 @@ Prefer Eglot's server formatting; otherwise use an external formatter if found."
    (t (message "No formatter available (Eglot not active; no external formatter found)."))))
 
 (defun core/nix--format-on-save ()
-  "Buffer-local hook to format on save."
+  "Enable format-on-save for the current buffer."
   (add-hook 'before-save-hook #'core/nix-format-buffer nil t))
 
 ;; ---------- Eglot (LSP) ----------
 (with-eval-after-load 'eglot
-  ;; Tell Eglot to use 'nil' for Nix buffers
+  ;; Tell Eglot to use 'nil' for Nix buffers.
   (add-to-list 'eglot-server-programs '((nix-mode nix-ts-mode) . ("nil"))))
 
 (defun core/nix--eglot-setup ()
   "Ensure Eglot is running if available; enable Eldoc & Flymake."
   (when (featurep 'eglot)
-    ;; Start/attach Eglot (no error if server missing; it will just echo a message)
+    (unless (executable-find "nil")
+      (message "core-nix: LSP server 'nil' not found on PATH"))
     (eglot-ensure))
-  ;; Eldoc is generally on by default; ensure it's enabled.
   (when (fboundp 'eldoc-mode) (eldoc-mode 1))
-  ;; Flymake cooperates with Eglot; turn it on for diagnostics.
   (when (fboundp 'flymake-mode) (flymake-mode 1)))
 
+;; ---------- Per-buffer setup ----------
 (defun core/nix-setup ()
   "Main setup for Nix buffers."
   (core/nix--eglot-setup)
   (core/nix--format-on-save)
-  ;; A couple of sensible defaults
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 2))
 
 (add-hook 'nix-mode-hook     #'core/nix-setup)
 (add-hook 'nix-ts-mode-hook  #'core/nix-setup)
 
-;; Optional: a convenient keybinding for manual format
-;; Change to your leader system if you have one.
-(with-eval-after-load 'nix-mode
-  (define-key (current-global-map) (kbd "C-c =") #'core/nix-format-buffer))
+;; ---------- Keybinding ----------
+;; Handy manual format binding (global so it works in either mode).
+(global-set-key (kbd "C-c =") #'core/nix-format-buffer)
 
 (provide 'core-nix)
 ;;; core-nix.el ends here
