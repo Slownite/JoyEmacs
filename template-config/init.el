@@ -22,6 +22,8 @@
 (require 'core-git)
 (require 'core-project)
 (require 'core-leader)
+(require 'core-treesitter)
+(require 'core-nix)
 
 (provide 'init)
 ;;; init.el ends here

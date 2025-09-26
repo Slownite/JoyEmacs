@@ -26,6 +26,8 @@
         rainbow-delimiters       # rainbow parens
         hl-todo                  # TODO/FIXME highlights
         general                  # leader keys (Doom-style)
+	nix-ts-mode
+	eglot
       ]);
 
       defaultCfgDir = "$HOME/.config/joyemacs";
