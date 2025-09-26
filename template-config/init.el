@@ -6,7 +6,6 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-
 (eval-when-compile (require 'use-package))
 
 ;; Add lisp/ to load-path
@@ -28,6 +27,17 @@
 (require 'core-nix)
 (require 'core-python)
 
+;; config I don't know where to put
+(recentf-mode 1)
+(setq history-length 25)
+(savehist-mode 1)
+(save-place-mode 1)
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(load custom-file 'noerror 'nomessage)
+(setq use-dialog-box nil)
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t)
+;; ---------------------------------
 (provide 'init)
 ;;; init.el ends here
 
