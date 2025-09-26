@@ -1,4 +1,4 @@
-;;; core-ui.el --- UI/UX for JoyEmacs -*- lexical-binding: t; -*-
+;; core-ui.el --- UI/UX for JoyEmacs -*- lexical-binding: t; -*-
 
 (use-package doom-themes
   :demand t
@@ -10,10 +10,10 @@
   (when (fboundp 'doom-themes-visual-bell-config)
     (doom-themes-visual-bell-config))
 
-  ;; (Optional) other extensions if you use them:
-  ;; (ignore-errors (require 'doom-themes-ext-org))
-  ;; (when (fboundp 'doom-themes-org-config)
-  ;;   (doom-themes-org-config))
+  (Optional) other extensions if you use them:
+  (ignore-errors (require 'doom-themes-ext-org))
+  (when (fboundp 'doom-themes-org-config)
+    (doom-themes-org-config))
   )
 
 (use-package doom-modeline
@@ -25,7 +25,7 @@
 (use-package all-the-icons :defer t)
 (use-package dashboard
   :config
-  (setq dashboard-startup-banner 'official
+  (setq dashboard-startup-banner 'logo
         dashboard-center-content t
         dashboard-items '((recents  . 8)
                           (projects . 5)))
