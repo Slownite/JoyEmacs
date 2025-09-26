@@ -13,7 +13,13 @@
 ;; Example Nix paths (uncomment the one that matches your system):
 (add-to-list 'treesit-extra-load-path "/run/current-system/sw/lib/tree-sitter") ; NixOS system profile
 (add-to-list 'treesit-extra-load-path (expand-file-name "~/.nix-profile/lib/tree-sitter")) ; user profile
-
+(dolist (dir '("~/.nix-profile/lib/tree-sitter"
+               "~/.local/state/nix/profiles/default/lib/tree-sitter"
+               "~/.local/state/nix/profiles/home-manager/lib/tree-sitter"
+               "~/.local/state/nix/profiles/home-manager/home-path/lib/tree-sitter"))
+  (let ((d (expand-file-name dir)))
+    (when (file-directory-p d)
+      (add-to-list 'treesit-extra-load-path d))))
 ;; Highest level of font-lock (more syntax categories)
 (setq treesit-font-lock-level 4)
 

@@ -1,27 +1,23 @@
 ;;; core-nix.el --- Nix language plumbing (TS, LSP, format) -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; - Prefer Tree-sitter major mode (nix-ts-mode) when available
-;; - LSP via Eglot using the 'nil' language server
-;; - Format-on-save: eglot-format-buffer -> alejandra -> nixfmt -> nixpkgs-fmt
-
+;; - Prefer Tree-sitter (nix-ts-mode) if available, else nix-mode
+;; - Eglot LSP with 'nil' if available
+;; - Format on save (Eglot -> alejandra -> nixfmt -> nixpkgs-fmt)
 ;;; Code:
 
-(require 'seq) ;; for seq-find
+(require 'seq) ;; seq-find
 
-;; ---------- Modes & file associations ----------
-;; Prefer nix-ts-mode; fall back to nix-mode; else fundamental-mode (so it never errors).
+;; Try to load modes so autoloads aren't a problem.
+(ignore-errors (require 'nix-ts-mode))
+(ignore-errors (require 'nix-mode))
+
+;; File association: prefer nix-ts-mode, then nix-mode, else fall back safely.
 (add-to-list 'auto-mode-alist
              (cons "\\.nix\\'"
                    (cond
                     ((fboundp 'nix-ts-mode) 'nix-ts-mode)
                     ((fboundp 'nix-mode)    'nix-mode)
                     (t                      'fundamental-mode))))
-
-;; Only add the remap if both modes exist (avoids “unknown mode 'nix-mode'” warning).
-(when (and (boundp 'major-mode-remap-alist)
-           (fboundp 'nix-mode)
-           (fboundp 'nix-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(nix-mode . nix-ts-mode)))
 
 ;; ---------- Formatting ----------
 (defgroup core-nix nil
@@ -38,14 +34,12 @@
   (seq-find #'executable-find core/nix-formatters))
 
 (defun core/nix-format-buffer ()
-  "Format current buffer. Prefer Eglot; otherwise use an external formatter if available."
+  "Format current buffer. Prefer Eglot; otherwise try an external formatter."
   (interactive)
   (cond
-   ;; Eglot formatting (if attached and server supports it)
    ((and (boundp 'eglot-managed-mode) eglot-managed-mode
          (fboundp 'eglot-format-buffer))
     (eglot-format-buffer))
-   ;; External formatter fallback
    ((let ((fmt (core/nix--external-formatter)))
       (when fmt
         (let* ((orig-point (point))
@@ -66,8 +60,7 @@
                 (progn
                   (message "Formatter %s failed (status %s). See *nixfmt* buffer." fmt status)
                   (display-buffer tmp)))
-            (unless (get-buffer-window tmp) (kill-buffer tmp))))))
-    )
+            (unless (get-buffer-window tmp) (kill-buffer tmp)))))))
    (t (message "No formatter available (Eglot not active; no external formatter found)."))))
 
 (defun core/nix--format-on-save ()
@@ -76,7 +69,7 @@
 
 ;; ---------- Eglot (LSP) ----------
 (with-eval-after-load 'eglot
-  ;; Tell Eglot to use 'nil' for Nix buffers.
+  ;; Use 'nil' for Nix buffers if present.
   (add-to-list 'eglot-server-programs '((nix-mode nix-ts-mode) . ("nil"))))
 
 (defun core/nix--eglot-setup ()
@@ -99,7 +92,14 @@
 (add-hook 'nix-mode-hook     #'core/nix-setup)
 (add-hook 'nix-ts-mode-hook  #'core/nix-setup)
 
-;; ---------- Keybinding ----------
+;; If a .nix buffer opened before this file loaded, fix it now.
+(dolist (buf (buffer-list))
+  (with-current-buffer buf
+    (when (and buffer-file-name
+               (string-match-p "\\.nix\\'" buffer-file-name)
+               (eq major-mode 'fundamental-mode))
+      (normal-mode))))
+
 ;; Handy manual format binding (global so it works in either mode).
 (global-set-key (kbd "C-c =") #'core/nix-format-buffer)
 
