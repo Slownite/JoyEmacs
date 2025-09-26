@@ -84,13 +84,6 @@
         };
 
         devShells.default =
-          pkgs.mkShell { packages = with pkgs; [ 
-          joyEmacs 
-          ripgrep 
-          fd 
-          git
-    tree-sitter-grammars.tree-sitter-nix   # ← add this
-    nil alejandra 
-          ]; };
+          pkgs.mkShell { packages = with pkgs; [ joyEmacs ripgrep fd git ]; };
       });
 }
