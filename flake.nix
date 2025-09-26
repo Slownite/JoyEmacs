@@ -91,8 +91,33 @@
           '';
         };
 
+        #---- Installer ----
+        installer = pkgs.writeShellApplication {
+          name = "joyemacs-install";
+          text = ''
+            set -euo pipefail
+            CFG_DIR="''${JOYEMACS_HOME:-$HOME/.config/joyemacs}"
+            if [ -e "$CFG_DIR/init.el" ]; then
+              echo "JoyEmacs: $CFG_DIR/init.el already exists; nothing to do."
+              exit 0
+            fi
+            mkdir -p "$CFG_DIR"
+            if [ -d "${./template-config}" ]; then
+              cp -r ${./template-config}/* "$CFG_DIR"/
+              echo "JoyEmacs: copied template-config to $CFG_DIR"
+            else
+              echo "JoyEmacs: no template-config in repo."
+              echo "Create $CFG_DIR/init.el and any lisp/ modules you want."
+            fi
+          '';
+        };
+
       in {
         packages.default = joyEmacs;
+        apps.install = {
+          type = "app";
+          program = "${installer}/bin/joyemacs-install";
+        };
 
         apps.joyemacs = {
           type = "app";
