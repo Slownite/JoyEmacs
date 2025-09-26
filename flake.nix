@@ -42,20 +42,6 @@
             corfu
           ]);
 
-        # ---- Tree-sitter grammars shipped at runtime ----
-        tsGrammars = [
-          pkgs.tree-sitter-grammars.tree-sitter-nix
-          pkgs.tree-sitter-grammars.tree-sitter-python
-          pkgs.tree-sitter-grammars.tree-sitter-markdown
-          pkgs.tree-sitter-grammars.tree-sitter-javascript
-          pkgs.tree-sitter-grammars.tree-sitter-vue
-          pkgs.tree-sitter-grammars.tree-sitter-cpp
-          pkgs.tree-sitter-grammars.tree-sitter-html
-          pkgs.tree-sitter-grammars.tree-sitter-json
-          pkgs.tree-sitter-grammars.tree-sitter-toml
-          # add more grammars here if you want
-        ];
-
         # ---- LSP servers + formatters ----
         servers = with pkgs; [
           nil
@@ -76,47 +62,32 @@
         # ---- Launcher ----
         launcher = pkgs.writeShellApplication {
           name = "joyemacs";
-          runtimeInputs = [ joyEmacs ] ++ tsGrammars ++ servers;
+          runtimeInputs = [ joyEmacs ] ++ servers;
           text = ''
             set -euo pipefail
             CFG_DIR="''${JOYEMACS_HOME:-${defaultCfgDir}}"
-
-            # export Tree-sitter grammar dirs for Emacs
-            export JOYEMACS_TS_DIRS="${
-              pkgs.lib.concatStringsSep ":"
-              (map (g: "${g}/lib/tree-sitter") tsGrammars)
-            }"
-
             exec ${joyEmacs}/bin/emacs -Q --load "$CFG_DIR/init.el" "$@"
           '';
         };
 
         #---- Installer ----
-        # in the same let block where tsGrammars is defined
         installer = pkgs.writeShellApplication {
           name = "joyemacs-install";
-          runtimeInputs = tsGrammars; # so paths exist when installer runs
           text = ''
             set -euo pipefail
             CFG_DIR="''${JOYEMACS_HOME:-$HOME/.config/joyemacs}"
-            mkdir -p "$CFG_DIR/lisp" "$CFG_DIR/tree-sitter"
-
-            # (optional) create a minimal init if none exists
-            if [ ! -f "$CFG_DIR/init.el" ]; then
-              echo ";; your init goes here" > "$CFG_DIR/init.el"
-              echo "Wrote $CFG_DIR/init.el (minimal placeholder)."
+            if [ -e "$CFG_DIR/init.el" ]; then
+              echo "JoyEmacs: $CFG_DIR/init.el already exists; nothing to do."
+              exit 0
             fi
-
-            echo "Linking Tree-sitter grammars into $CFG_DIR/tree-sitter…"
-            for g in ${
-              pkgs.lib.concatStringsSep " "
-              (map (g: "${g}/lib/tree-sitter") tsGrammars)
-            }; do
-              if [ -d "$g" ]; then
-                ln -sf "$g"/* "$CFG_DIR/tree-sitter/"
-              fi
-            done
-            echo "Done."
+            mkdir -p "$CFG_DIR"
+            if [ -d "${./template-config}" ]; then
+              cp -r ${./template-config}/* "$CFG_DIR"/
+              echo "JoyEmacs: copied template-config to $CFG_DIR"
+            else
+              echo "JoyEmacs: no template-config in repo."
+              echo "Create $CFG_DIR/init.el and any lisp/ modules you want."
+            fi
           '';
         };
 
@@ -137,8 +108,7 @@
         };
 
         devShells.default = pkgs.mkShell {
-          packages = with pkgs;
-            [ joyEmacs ] ++ tsGrammars ++ servers ++ [ ripgrep fd git ];
+          packages = with pkgs; [ joyEmacs ] ++ servers ++ [ ripgrep fd git ];
         };
       });
 }
