@@ -30,8 +30,8 @@
 
     "/"  '(consult-ripgrep :which-key "ripgrep")
     "t"  '(:ignore t :which-key "terminal")
-    "t"  '(eshell :which-key "eshell")
-    "T"  '(project-eshell :which-key "project eshell")
+    "te"  '(eshell :which-key "eshell")
+    "tE"  '(project-eshell :which-key "project eshell")
     ))
 
 (provide 'core-leader)

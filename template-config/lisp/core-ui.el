@@ -22,18 +22,26 @@
         doom-modeline-icon t))
 
 (use-package all-the-icons :defer t)
+(setq inhibit-startup-screen t)
+
+;; Show Dashboard on startup (reliably)
+(setq inhibit-startup-screen t)
 
 (use-package dashboard
+  :ensure t
+  :demand t
   :init
-  ;; Make dashboard the first thing you see
-  (setq inhibit-startup-screen t
-        initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-  :config
-  (setq dashboard-startup-banner 'logo
+  (setq dashboard-startup-banner 'official
         dashboard-center-content t
-        dashboard-items '((recents  . 8)
-                          (projects . 5)))
-  (dashboard-setup-startup-hook))
+        dashboard-items '((recents . 8) (projects . 5))
+        ;; Hand Emacs a live buffer immediately so it doesn't fall back to *scratch*
+        initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  :config
+  (dashboard-setup-startup-hook)
+  ;; Belt-and-suspenders: if something else stole focus, open the dashboard anyway
+  (add-hook 'emacs-startup-hook #'dashboard-open))
+
+
 
 (global-display-line-numbers-mode 1)
 (global-hl-line-mode 1)
