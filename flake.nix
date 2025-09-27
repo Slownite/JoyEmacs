@@ -38,23 +38,10 @@
             centaur-tabs
             magit
             nix-ts-mode
+            vue-mode
             eglot
             corfu
           ]);
-
-        # ---- Tree-sitter grammars shipped at runtime ----
-        tsGrammars = [
-          pkgs.tree-sitter-grammars.tree-sitter-nix
-          pkgs.tree-sitter-grammars.tree-sitter-python
-          pkgs.tree-sitter-grammars.tree-sitter-markdown
-          pkgs.tree-sitter-grammars.tree-sitter-javascript
-          pkgs.tree-sitter-grammars.tree-sitter-vue
-          pkgs.tree-sitter-grammars.tree-sitter-cpp
-          pkgs.tree-sitter-grammars.tree-sitter-html
-          pkgs.tree-sitter-grammars.tree-sitter-json
-          pkgs.tree-sitter-grammars.tree-sitter-toml
-          # add more grammars here if you want
-        ];
 
         # ---- LSP servers + formatters ----
         servers = with pkgs; [
@@ -76,17 +63,10 @@
         # ---- Launcher ----
         launcher = pkgs.writeShellApplication {
           name = "joyemacs";
-          runtimeInputs = [ joyEmacs ] ++ tsGrammars ++ servers;
+          runtimeInputs = [ joyEmacs ] ++ servers;
           text = ''
             set -euo pipefail
             CFG_DIR="''${JOYEMACS_HOME:-${defaultCfgDir}}"
-
-            # export Tree-sitter grammar dirs for Emacs
-            export JOYEMACS_TS_DIRS="${
-              pkgs.lib.concatStringsSep ":"
-              (map (g: "${g}/lib/tree-sitter") tsGrammars)
-            }"
-
             exec ${joyEmacs}/bin/emacs -Q --load "$CFG_DIR/init.el" "$@"
           '';
         };
@@ -129,8 +109,7 @@
         };
 
         devShells.default = pkgs.mkShell {
-          packages = with pkgs;
-            [ joyEmacs ] ++ tsGrammars ++ servers ++ [ ripgrep fd git ];
+          packages = with pkgs; [ joyEmacs ] ++ servers ++ [ ripgrep fd git ];
         };
       });
 }

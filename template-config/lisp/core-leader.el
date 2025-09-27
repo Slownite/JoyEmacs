@@ -10,7 +10,7 @@
 
   (my/leader
     "f"  '(:ignore t :which-key "files")
-    "ff" '(find-file :which-key "find file")
+    "SPC" '(find-file :which-key "find file")
     "fs" '(save-buffer :which-key "save")
 
     "b"  '(:ignore t :which-key "buffers")
@@ -28,7 +28,11 @@
     "g"  '(:ignore t :which-key "git")
     "gs" '(magit-status :which-key "status")
 
-    "/"  '(consult-ripgrep :which-key "ripgrep")))
+    "/"  '(consult-ripgrep :which-key "ripgrep")
+    "t"  '(:ignore t :which-key "terminal")
+    "t"  '(eshell :which-key "eshell")
+    "T"  '(project-eshell :which-key "project eshell")
+    ))
 
 (provide 'core-leader)
 ;;; core-leader.el ends here
