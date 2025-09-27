@@ -2,7 +2,7 @@
 
 [![Built with Nix](https://img.shields.io/badge/built%20with-Nix-5277C3?logo=nixos\&logoColor=white)](https://nixos.org)
 [![Emacs](https://img.shields.io/badge/Emacs-29+-7F5AB6?logo=gnu-emacs\&logoColor=white)](https://www.gnu.org/software/emacs/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 🚀 A reproducible, standalone Emacs distribution built with **Nix**, configured in **Elisp**.
 Think *nixvim* for Emacs: install with one command, edit `~/.config/joyemacs/init.el`, and you’re good to go.
@@ -114,5 +114,5 @@ nix develop
 
 ## 📜 License
 
-MIT — do whatever brings you Joy ✨
+GPL3 — do whatever brings you Joy ✨
 

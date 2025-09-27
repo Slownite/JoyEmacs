@@ -38,9 +38,9 @@
             centaur-tabs
             magit
             nix-ts-mode
+            vue-mode
             eglot
             corfu
-            vue-mode
           ]);
 
         # ---- LSP servers + formatters ----
