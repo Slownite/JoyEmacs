@@ -31,9 +31,11 @@
   :ensure t
   :demand t
   :init
-  (setq dashboard-startup-banner 'official
+  
+  (setq dashboard-banner-directory user-emacs-directory 
+	dashboard-startup-banner (expand-file-name "M-x_butterfly.png" user-emacs-directory)
         dashboard-center-content t
-        dashboard-items '((recents . 8) (projects . 5))
+        dashboard-items '((recents . 8))
         ;; Hand Emacs a live buffer immediately so it doesn't fall back to *scratch*
         initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   :config

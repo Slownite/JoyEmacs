@@ -20,11 +20,11 @@
 (require 'core-git)
 (require 'core-project)
 (require 'core-leader)
+(require 'core-org)
 (require 'core-treesitter)
 (require 'eglot)        ;; <-- add this line
 (require 'core-nix)
 (require 'core-python)
-(require 'corefu)
 ;; config I don't know where to put
 (recentf-mode 1)
 (setq history-length 25)
