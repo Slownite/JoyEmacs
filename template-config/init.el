@@ -20,6 +20,7 @@
 (require 'core-git)
 (require 'core-project)
 (require 'core-leader)
+(require 'core-org)
 (require 'core-treesitter)
 (require 'eglot)        ;; <-- add this line
 (require 'core-nix)

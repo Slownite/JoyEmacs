@@ -41,6 +41,7 @@
             vue-mode
             eglot
             corfu
+            org-roam
           ]);
 
         # ---- LSP servers + formatters ----

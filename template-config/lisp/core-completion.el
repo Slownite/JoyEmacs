@@ -56,6 +56,8 @@
   ;; commands are hidden, since they are not used via M-x. This setting is
   ;; useful beyond Corfu.
   (read-extended-command-predicate #'command-completion-default-include-p))
+;; add parenthesis brakets and quotes completion
+  (electric-pair-mode 1)
 (provide 'core-completion)
 ;;; core-completion.el ends here
 
