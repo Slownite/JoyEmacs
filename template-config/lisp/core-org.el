@@ -20,6 +20,7 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 ;; ------- org modern ---------
+(with-eval-after-load 'org (global-org-modern-mode))
 (setq
  ;; Edit settings
  org-auto-align-tags nil
