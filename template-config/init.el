@@ -36,6 +36,15 @@
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t)
 ;; ---------------------------------
+;; ------macbook config specific------
+(when (and (eq system-type 'darwin) window-system)
+  (when (boundp 'ns-option-modifier)       (setq ns-option-modifier 'meta
+                                                 ns-right-option-modifier nil))
+  (when (boundp 'mac-option-modifier)      (setq mac-option-modifier 'meta
+                                                 mac-right-option-modifier nil))
+  (when (boundp 'ns-command-modifier)      (setq ns-command-modifier 'super))
+  (when (boundp 'mac-command-modifier)     (setq mac-command-modifier 'super)))
+;; ------------------------------------
 (provide 'init)
 ;;; init.el ends here
 
