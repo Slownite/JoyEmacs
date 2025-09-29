@@ -42,6 +42,7 @@
             eglot
             corfu
             org-roam
+            org-modern
           ]);
 
         # ---- LSP servers + formatters ----
