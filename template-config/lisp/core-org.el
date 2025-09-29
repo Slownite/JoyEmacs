@@ -20,6 +20,10 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 ;; ------- org modern ---------
+(use-package org-modern
+  :demand t
+  :config
+  (global-org-modern-mode))
 (with-eval-after-load 'org (global-org-modern-mode))
 (setq
  ;; Edit settings
